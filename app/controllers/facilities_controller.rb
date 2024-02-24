@@ -1,11 +1,11 @@
 class FacilitiesController < ApplicationController
-  before_action :set_user, only: %i[ show update destroy ]
+  before_action :set_facility, only: %i[ show update destroy ]
 
   # GET /facilities
   def index
-    @facilities = Facility.all
+    facilities = Facility.all
 
-    render json: @facilities
+    render json: facilities
   end
 
   # GET /facilities/1
@@ -15,10 +15,10 @@ class FacilitiesController < ApplicationController
 
   # POST /facilities
   def create
-    @facility = Facility.new(user_params)
+    @facility = Facility.new(params)
 
     if @facility.save
-      render json: @facility, status: :created, location: @facility
+      render json: @facility, status: :created, location: facility
     else
       render json: @facility.errors, status: :unprocessable_entity
     end
@@ -26,7 +26,7 @@ class FacilitiesController < ApplicationController
 
   # PATCH/PUT /facilities/1
   def update
-    if @facility.update(user_params)
+    if @facility.update(facility_params)
       render json: @facility
     else
       render json: @facility.errors, status: :unprocessable_entity
@@ -39,13 +39,14 @@ class FacilitiesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_user
-      @facility = Facility.find(params[:id])
-    end
+  
+  # Use callbacks to share common setup or constraints between actions.
+  def set_facility
+    @facility = Facility.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def user_params
-      params.require(:facility).permit(:account_id, :first_name, :last_name, :email)
-    end
+  # Only allow a trusted parameter "white list" through.
+  def facility_params
+    params.require(:facility).permit(:name, :address, :country, :city, :province, :postal_code, :phone_number, :description, :status)
+  end
 end

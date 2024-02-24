@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_20_091943) do
+ActiveRecord::Schema[7.0].define(version: 2024_02_24_002926) do
   create_table "accounts", force: :cascade do |t|
     t.string "name"
     t.string "subdomain"
@@ -18,6 +18,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_20_091943) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "status"
+  end
+
+  create_table "customers", force: :cascade do |t|
+    t.string "first_name"
+    t.string "last_name"
+    t.string "email"
+    t.string "phone_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "account_id", null: false
+    t.index ["account_id"], name: "index_customers_on_account_id"
   end
 
   create_table "facilities", force: :cascade do |t|
@@ -30,7 +41,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_20_091943) do
     t.string "phone_number"
     t.string "postal_code"
     t.string "province"
-    t.integer "status"
+    t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_facilities_on_account_id"
@@ -46,6 +57,29 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_20_091943) do
     t.index ["account_id"], name: "index_users_on_account_id"
   end
 
+  create_table "venue_types", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "account_id", null: false
+    t.index ["account_id"], name: "index_venue_types_on_account_id"
+  end
+
+  create_table "venues", force: :cascade do |t|
+    t.integer "facility_id", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "venue_type_id"
+    t.decimal "hourly_rate", default: "0.0"
+    t.index ["facility_id"], name: "index_venues_on_facility_id"
+    t.index ["venue_type_id"], name: "index_venues_on_venue_type_id"
+  end
+
+  add_foreign_key "customers", "accounts"
   add_foreign_key "facilities", "accounts"
   add_foreign_key "users", "accounts"
+  add_foreign_key "venue_types", "accounts"
+  add_foreign_key "venues", "facilities"
+  add_foreign_key "venues", "venue_types"
 end

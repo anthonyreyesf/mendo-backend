@@ -5,7 +5,7 @@ class FacilitiesController < ApplicationController
   def index
     facilities = Facility.all
 
-    render json: facilities
+    render json: facilities.as_json(include: { operation_hours: { only: [:opens_at, :closes_at, :id] } })
   end
 
   # GET /facilities/1

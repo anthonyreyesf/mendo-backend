@@ -1,5 +1,5 @@
 class VenuesController < ApplicationController
-  before_action :set_venue, only: %i[ show update destroy ]
+  before_action :set_venue, only: %i[ show update destroy available_slots ]
 
   # GET /venues
   def index
@@ -31,6 +31,37 @@ class VenuesController < ApplicationController
     else
       render json: @venue.errors, status: :unprocessable_entity
     end
+  end
+
+  # GET /venues/1/available_slots?date=2021-01-01&duration=1
+  def available_slots
+    date = Date.parse(params[:date])
+    booking_duration = params[:duration].to_i.hours
+
+    operation_hour = @venue.facility.operation_hours.find_by(day_of_week:date.wday)
+    available_slots = []
+
+    if operation_hour
+      start_time = operation_hour.opens_at.to_time
+      end_time = operation_hour.closes_at.to_time
+  
+      while start_time + booking_duration <= end_time
+        slot_end_time = start_time + booking_duration
+        slot_end_time_minus_1_minute = slot_end_time - 1.minute
+        overlapping_booking = @venue.bookings.where(date: date, start_time: start_time.strftime("%H:%M")..slot_end_time_minus_1_minute.strftime("%H:%M")).first
+        
+        if overlapping_booking.nil?
+          available_slots << { start_time: start_time.strftime("%H:%M"), end_time: slot_end_time.strftime("%H:%M") }
+          start_time += booking_duration
+        end
+        
+        if overlapping_booking.present?
+          start_time = overlapping_booking.end_time.to_time
+        end
+      end
+    end
+
+    render json: { available_slots: available_slots }
   end
 
   private

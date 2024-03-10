@@ -1,4 +1,11 @@
 FactoryBot.define do
+  factory :account do
+    name { Faker::Company.name }
+    subdomain { Faker::Internet.domain_word }
+    domain { Faker::Internet.domain_name }
+    status { "active" }
+  end
+
   factory :user do
     first_name { Faker::Name.first_name }
     last_name { Faker::Name.last_name }

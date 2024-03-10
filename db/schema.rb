@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_24_002926) do
+ActiveRecord::Schema[7.0].define(version: 2024_03_01_015727) do
   create_table "accounts", force: :cascade do |t|
     t.string "name"
     t.string "subdomain"
@@ -18,6 +18,18 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_24_002926) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "status"
+  end
+
+  create_table "bookings", force: :cascade do |t|
+    t.integer "venue_id", null: false
+    t.integer "customer_id", null: false
+    t.string "start_time"
+    t.string "end_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "date"
+    t.index ["customer_id"], name: "index_bookings_on_customer_id"
+    t.index ["venue_id"], name: "index_bookings_on_venue_id"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -45,6 +57,16 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_24_002926) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_facilities_on_account_id"
+  end
+
+  create_table "operation_hours", force: :cascade do |t|
+    t.integer "facility_id", null: false
+    t.integer "day_of_week"
+    t.string "opens_at"
+    t.string "closes_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["facility_id"], name: "index_operation_hours_on_facility_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -76,8 +98,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_24_002926) do
     t.index ["venue_type_id"], name: "index_venues_on_venue_type_id"
   end
 
+  add_foreign_key "bookings", "customers"
+  add_foreign_key "bookings", "venues"
   add_foreign_key "customers", "accounts"
   add_foreign_key "facilities", "accounts"
+  add_foreign_key "operation_hours", "facilities"
   add_foreign_key "users", "accounts"
   add_foreign_key "venue_types", "accounts"
   add_foreign_key "venues", "facilities"

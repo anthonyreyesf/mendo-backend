@@ -60,7 +60,7 @@ class VenuesController < ApplicationController
       
       if overlapping_booking.nil?
         available_slots << { start_time: start_time.strftime("%H:%M"), end_time: slot_end_time.strftime("%H:%M") }
-        start_time += booking_duration
+        start_time += 30.minutes # Move to next slot, needs to be configurable
       else
         start_time = overlapping_booking.end_time.to_time
       end
